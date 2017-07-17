@@ -7,74 +7,7 @@ require 'happymapper'
 require 'nokogiri'
 
 # see: https://github.com/dam5s/happymapper
-# Class Asset maps from the 'Asset' from Checklist XML file using HappyMapper
-# class Asset
-#   include HappyMapper
-#   tag 'ASSET'
-#   element :role, String, tag: 'ROLE'
-#   element :type, String, tag: 'ASSET_TYPE'
-#   element :host_name, String, tag: 'HOST_NAME'
-#   element :host_ip, String, tag: 'HOST_IP'
-#   element :host_mac, String, tag: 'HOST_MAC'
-#   element :host_guid, String, tag: 'HOST_GUID'
-#   element :host_fqdn, String, tag: 'HOST_FQDN'
-#   element :tech_area, String, tag: 'TECH_AREA'
-#   element :target_key, String, tag: 'TARGET_KEY'
-#   element :web_or_database, String, tag: 'WEB_OR_DATABASE'
-#   element :web_db_site, String, tag: 'WEB_DB_SITE'
-#   element :web_db_instance, String, tag: 'WEB_DB_INSTANCE'
-# end
-#
-# # Class Asset maps from the 'SI_DATA' from Checklist XML file using HappyMapper
-# class SI_DATA
-#   include HappyMapper
-#   tag 'SI_DATA'
-#   element :name, String, tag: 'SID_NAME'
-#   element :data, String, tag: 'SID_DATA'
-# end
-#
-# #Class Asset maps from the 'STIG_INFO' from Checklist XML file using HappyMapper
-# class StigInfo
-#   include HappyMapper
-#   tag 'STIG_INFO'
-#   has_many :si_data, SI_DATA, tag: 'SI_DATA'
-# end
-#
-# #Class Asset maps from the 'STIG_DATA' from Checklist XML file using HappyMapper
-# class StigData
-#   include HappyMapper
-#   tag 'STIG_DATA'
-#   has_one :attrib, String, tag: 'VULN_ATTRIBUTE'
-#   has_one :data, String, tag: 'ATTRIBUTE_DATA'
-# end
-#
-# # Class Asset maps from the 'VULN' from Checklist XML file using HappyMapper
-# class Vuln
-#   include HappyMapper
-#   tag 'VULN'
-#   has_many :stig_data, StigData, tag:'STIG_DATA'
-#   has_one :status, String, tag: 'STATUS'
-#   has_one :finding_details, String, tag: 'FINDING_DETAILS'
-#   has_one :comments, String, tag: 'COMMENTS'
-#   has_one :severity_override, String, tag: 'SEVERITY_OVERRIDE'
-#   has_one :severity_justification, String, tag: 'SEVERITY_JUSTIFICATION'
-# end
-#
-# # Class Asset maps from the 'iSTIG' from Checklist XML file using HappyMapper
-# class IStig
-#   include HappyMapper
-#   tag 'iSTIG'
-#   has_one :stig_info, StigInfo, tag: 'STIG_INFO'
-#   has_many :vuln, Vuln, tag: 'VULN'
-# end
-#
-# # Class Asset maps from the 'STIGS' from Checklist XML file using HappyMapper
-# class Stigs
-#   include HappyMapper
-#   tag 'STIGS'
-#   has_one :istig, IStig, tag: 'iSTIG'
-# end
-
+# Class Status maps from the 'status' from Benchmark XML file using HappyMapper
 class Status
   include HappyMapper
   tag 'status'
@@ -82,6 +15,7 @@ class Status
   content :status, String, tag: 'status'
 end
 
+# Class Notice maps from the 'notice' from Benchmark XML file using HappyMapper
 class Notice
   include HappyMapper
   tag 'notice'
@@ -90,6 +24,7 @@ class Notice
   content :notice, String, tag: 'notice'
 end
 
+# Class ReferenceBenchmark maps from the 'reference' from Benchmark XML file using HappyMapper
 class ReferenceBenchmark
   include HappyMapper
   tag 'reference'
@@ -98,6 +33,7 @@ class ReferenceBenchmark
   element :dc_source, String, namespace: 'dc', tag: 'source'
 end
 
+# Class ReferenceGroup maps from the 'reference' from Benchmark XML file using HappyMapper
 class ReferenceGroup
   include HappyMapper
   tag 'reference'
@@ -108,6 +44,7 @@ class ReferenceGroup
   element :dc_identifier, String, namespace: 'dc', tag: 'identifier'
 end
 
+# Class Plaintext maps from the 'plain-text' from Benchmark XML file using HappyMapper
 class Plaintext
   include HappyMapper
   tag 'plain-text'
@@ -115,6 +52,7 @@ class Plaintext
   content :plaintext, String
 end
 
+# Class Select maps from the 'Select' from Benchmark XML file using HappyMapper
 class Select
   include HappyMapper
   tag 'Select'
@@ -122,6 +60,7 @@ class Select
   attribute :selected, String, tag: 'selected'
 end
 
+# Class Ident maps from the 'ident' from Benchmark XML file using HappyMapper
 class Ident
   include HappyMapper
   tag 'ident'
@@ -129,6 +68,7 @@ class Ident
   content :ident, String
 end
 
+# Class Fixtext maps from the 'fixtext' from Benchmark XML file using HappyMapper
 class Fixtext
   include HappyMapper
   tag 'fixtext'
@@ -136,12 +76,14 @@ class Fixtext
   content :fixtext, String
 end
 
+# Class Fix maps from the 'fixtext' from Benchmark XML file using HappyMapper
 class Fix
   include HappyMapper
   tag 'fixtext'
   attribute :id, String, tag: 'id'
 end
 
+# Class ContentRef maps from the 'check-content-ref' from Benchmark XML file using HappyMapper
 class ContentRef
   include HappyMapper
   tag 'check-content-ref'
@@ -149,6 +91,7 @@ class ContentRef
   attribute :href, String, tag: 'href'
 end
 
+# Class Check maps from the 'Check' from Benchmark XML file using HappyMapper
 class Check
   include HappyMapper
   tag 'check'
@@ -157,6 +100,7 @@ class Check
   element :content, String, tag: 'check-content'
 end
 
+# Class Profile maps from the 'Profile' from Benchmark XML file using HappyMapper
 class Profile
   include HappyMapper
   tag 'Profile'
@@ -166,6 +110,22 @@ class Profile
   has_many :select, Select, tag: 'select'
 end
 
+class Description
+  include HappyMapper
+  tag 'description'
+  element :vulndiscussion, String, tag: 'VulnDiscussion'
+  element :falsepositives, String, tag: 'FalsePositives'
+  element :falsenegatives, String, tag: 'FalseNegatives'
+  element :documentable, String, tag: 'Documentable'
+  element :mitigations, String, tag: 'Mitigations'
+  element :severityoverrideguidance, String, tag: 'SeverityOverrideGuidance'
+  element :potentialimpacts, String, tag: 'PotentialImpacts'
+  element :thirdpartytools, String, tag: 'ThirdPartyTools'
+  element :mitigationcontrol, String, tag: 'MitigationControl'
+  element :responsibility, String, tag: 'Responsibility'
+  element :iacontrols, String, tag: 'IAControls'
+end
+# Class Rule maps from the 'Rule' from Benchmark XML file using HappyMapper
 class Rule
   include HappyMapper
   tag 'Rule'
@@ -175,7 +135,6 @@ class Rule
   element :version, String, tag: 'version'
   element :title, String, tag: 'title'
   element :description, String, tag: 'description'
-  has_many :select, Select, tag: 'select'
   element :reference, ReferenceGroup, tag: 'reference'
   has_many :ident, Ident, tag: 'ident'
   element :fixtext, Fixtext, tag: 'fixtext'
@@ -183,6 +142,7 @@ class Rule
   element :check, Check, tag: 'check'
 end
 
+# Class Group maps from the 'Group' from Benchmark XML file using HappyMapper
 class Group
   include HappyMapper
   tag 'Group'
@@ -192,14 +152,15 @@ class Group
   element :rule, Rule, tag: 'Rule'
 end
 
+# Class Benchmark maps from the 'Benchmark' from Benchmark XML file using HappyMapper
 class Benchmark
   include HappyMapper
   tag 'Benchmark'
-  register_namespace 'dsig', "http://www.w3.org/2000/09/xmldsig#"
-  register_namespace 'xsi', "http://www.w3.org/2001/XMLSchema-instance"
-  register_namespace 'cpe', "http://cpe.mitre.org/language/2.0"
-  register_namespace 'xhtml', "http://www.w3.org/1999/xhtml"
-  register_namespace 'dc', "http://purl.org/dc/elements/1.1/"
+  register_namespace 'dsig', 'http://www.w3.org/2000/09/xmldsig#'
+  register_namespace 'xsi', 'http://www.w3.org/2001/XMLSchema-instance'
+  register_namespace 'cpe', 'http://cpe.mitre.org/language/2.0'
+  register_namespace 'xhtml', 'http://www.w3.org/1999/xhtml'
+  register_namespace 'dc', 'http://purl.org/dc/elements/1.1/'
   attribute :id, String, tag: 'id'
   attribute :xmlns, String, tag: 'xmlns'
   element :status, Status, tag: 'status'
@@ -211,25 +172,9 @@ class Benchmark
   element :version, String, tag: 'version'
   has_many :profile, Profile, tag: 'Profile'
   has_many :group, Group, tag: 'Group'
-
-
-  # def where(attrib, data)
-  #   stig.istig.vuln.each do |vuln|
-  #     if vuln.stig_data.any? { |element| element.attrib == attrib && element.data == data}
-  #       # @todo Handle multiple objects that match the condition
-  #       return vuln
-  #     end
-  #   end
-  # end
 end
-cklist = '/Users/rxman/Documents/MITRE/INSPEC/inspec2xccdf/data/post.xml'
-benchmark = Benchmark.new
-doc = File.open(cklist) { |f| Nokogiri::XML(f) }
+# cklist = '/Users/rxman/Documents/MITRE/INSPEC/inspec2xccdf/data/post.xml'
+# # benchmark = Benchmark.new
+# doc = File.open(cklist) { |f| Nokogiri::XML(f) }
 # benchmark = Benchmark.parse(doc.to_s)
-
-# benchmark.id = "PostgreSQL_9-x_STIG"
-# benchmark.xmlns = "http://checklists.nist.gov/xccdf/1.1"
-# benchmark.status = 'accepted'
-# benchmark.date = '2017-01-20'
-# puts benchmark.to_xml
-File.write('output_xccdf.xml', benchmark.to_xml)
+# File.write('output_xccdf.xml', benchmark.to_xml)
