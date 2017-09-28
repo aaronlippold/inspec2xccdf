@@ -110,21 +110,6 @@ class Profile
   has_many :select, Select, tag: 'select'
 end
 
-class Description
-  include HappyMapper
-  tag 'description'
-  element :vulndiscussion, String, tag: 'VulnDiscussion'
-  element :falsepositives, String, tag: 'FalsePositives'
-  element :falsenegatives, String, tag: 'FalseNegatives'
-  element :documentable, String, tag: 'Documentable'
-  element :mitigations, String, tag: 'Mitigations'
-  element :severityoverrideguidance, String, tag: 'SeverityOverrideGuidance'
-  element :potentialimpacts, String, tag: 'PotentialImpacts'
-  element :thirdpartytools, String, tag: 'ThirdPartyTools'
-  element :mitigationcontrol, String, tag: 'MitigationControl'
-  element :responsibility, String, tag: 'Responsibility'
-  element :iacontrols, String, tag: 'IAControls'
-end
 # Class Rule maps from the 'Rule' from Benchmark XML file using HappyMapper
 class Rule
   include HappyMapper
@@ -173,8 +158,3 @@ class Benchmark
   has_many :profile, Profile, tag: 'Profile'
   has_many :group, Group, tag: 'Group'
 end
-# cklist = '/Users/rxman/Documents/MITRE/INSPEC/inspec2xccdf/data/post.xml'
-# # benchmark = Benchmark.new
-# doc = File.open(cklist) { |f| Nokogiri::XML(f) }
-# benchmark = Benchmark.parse(doc.to_s)
-# File.write('output_xccdf.xml', benchmark.to_xml)

@@ -3,7 +3,8 @@
 libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
-require 'inspec2ckl/cli'
-require 'inspec2ckl/inspec2ckl'
-require 'inspec2ckl/StigChecklist'
-require 'inspec2ckl/version'
+require 'inspec2xccdf/cli'
+require 'inspec2xccdf/inspec2xccdf'
+require 'inspec2xccdf/benchmark'
+require 'inspec2xccdf/inspec_profile_parser'
+require 'inspec2xccdf/version'

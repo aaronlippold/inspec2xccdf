@@ -1,5 +1,5 @@
 # encoding:utf-8
 
-module InspecCKL
+module Inspec2Xccdf
   VERSION = '1.0.0'.freeze
 end

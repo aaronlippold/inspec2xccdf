@@ -1,149 +1,131 @@
 #!/usr/local/bin/ruby
 # encoding: utf-8
-# author: Aaron Lippold
 # author: Rony Xavier rx294@nyu.edu
 
 require 'happymapper'
 require 'nokogiri'
 require 'json'
+require 'yaml'
 require_relative 'benchmark'
+require_relative 'inspec_profile_parser'
 
-class Inspec2ckl < Benchmark
-  # def initialize(json, cklist, output, verbose)
-  def initialize()
-    # @verbose = verbose
-    # inspec_json = File.read(json)
-    # @data = parse_json(inspec_json)
-    # doc = File.open(cklist) { |f| Nokogiri::XML(f) }
+class Inspec2xccdf < Benchmark
+  def initialize(inspec_json_file, attribute_file, xccdf_title, verbose = false)
+    @verbose = verbose
+    @inspec_json_file = inspec_json_file
+    @attribute_file = attribute_file
+    @xccdf_title = xccdf_title
+
     @benchmark = Benchmark.new
-    # @checklist = Checklist.parse(doc.to_s)
-    populate_xml
-    # update_ckl_file
-    File.write('test_xccdf.xml', @benchmark.to_xml)
-    # puts "\nProcessed #{@data.keys.count} controls"
+    @controls = []
+
+    read_inspec_json
+    read_attributes
+    generate_xccdf
   end
 
-  def populate_xml
-    group = Group.new
-    group.id = 'V-72841'
-    group.title = 'SRG-APP-000142-DB-000094'
-    group.description = '<GroupDescription></GroupDescription>'
-    rule = Rule.new
-    rule.id = 'SV-87493r1_rule'
-    rule.severity = 'medium'
-    rule.weight = '10.0'
-    rule.version = 'PGS9-00-000100'
-    rule.title = 'PostgreSQL must be configured to prohibit or restrict the use of organization-defined functions, ports, protocols, and/or services, as defined in the PPSM CAL and vulnerability assessments.'
-    description = Description.new
-    description.vulndiscussion = 'In order to prevent unauthorized connection'
-    # description.documentable = 'false'
-    rule.description = '<VulnDiscussion>In order to prevent unauthorized connection</VulnDiscussion>'
-    # rule.description = description
-    reference = ReferenceGroup.new
-    reference.dc_title = 'DPMS Target PostgreSQL 9.x'
-    reference.dc_publisher = 'DISA'
-    reference.dc_type = 'DPMS Target'
-    reference.dc_subject = 'PostgreSQL 9.x'
-    reference.dc_identifier = '3087'
-    rule.reference = reference
-    ident = Ident.new
-    ident.system = 'http://iase.disa.mil/cci'
-    ident.ident = 'CCI-000382'
-    rule.ident = ident
-    fixtext = Fixtext.new
-    fixtext.fixref = 'F-79283r1_fix'
-    fixtext.fixtext = 'Note: The following instructions use the PGDATA environment variable. See supplementary content APPENDIX-F for instructions on configuring PGDATA.'
-    rule.fixtext = fixtext
-    fix = Fix.new
-    fix.id = 'F-79283r1_fix'
-    rule.fix = fix
-    check = Check.new
-    check.system = 'C-72975r1_chk'
-    content_ref = ContentRef.new
-    content_ref.name = 'M'
-    content_ref.href = 'DPMS_XCCDF_Benchmark_PostgreSQL_9-x_STIG.xml'
-    check.content_ref = content_ref
-    check.content = 'As the database administrator, run the following SQL:'
-    rule.check = check
-    group.rule = rule
-    plaintext = Plaintext.new
-    plaintext.id = 'release-info'
-    plaintext.plaintext = 'Release: 1 Benchmark Date: 20 Jan 2017'
-    @benchmark.plaintext = plaintext
-    @benchmark.title = 'PostgreSQL 9.x Security Technical Implementation Guide'
-    @benchmark.description = 'This Security Technical Implementation Guide is published as a tool to improve the security of Department of Defense (DoD) information systems. The requirements are derived from the National Institute of Standards and Technology (NIST) 800-53 and related documents. Comments or proposed revisions to this document should be sent via email to the following address: disa.stig_spt@mail.mil.'
-    @benchmark.group = group
+  def read_inspec_json
+    profile_handle = InspecProfileParser.new(File.read(@inspec_json_file))
+
+    unless profile_handle.content['status'].eql?('success')
+        puts profile_handle.content['status']
+        puts 'Existing...'
+        exit
+    end
+
+    @controls = profile_handle.content['controls']
+  rescue => e
+    puts "Exception: #{e.message}"
+    puts 'Existing...'
+    exit
   end
-  #
-  # def clk_status(control)
-  #   puts 'Full Status list: ' + control[:status].join(', ') if @verbose
-  #   status_list = control[:status].uniq
-  #   if status_list.include?('failed')
-  #     result = 'Open'
-  #   elsif status_list.include?('passed')
-  #     result = 'NotAFinding'
-  #   elsif status_list.include?('skipped')
-  #     result = 'Not_Reviewed'
-  #   else
-  #     result = 'Not_Tested'
-  #   end
-  #   if control[:impact].to_f.zero?
-  #     result = 'Not_Applicable'
-  #   end
-  #   result
-  # end
-  #
-  # def clk_finding_details(control)
-  #   control_clk_status = @checklist.where('Vuln_Num',control[:control_id]).status
-  #   result = "One or more of the automated tests failed or was inconclusive for the control \n\n #{control[:message].sort.join}" if control_clk_status == 'Open'
-  #   result = "All Automated tests passed for the control \n\n #{control[:message].join}" if control_clk_status == 'NotAFinding'
-  #   result = "Automated test skipped due to known accepted condition in the control : \n\n#{control[:message].join}" if control_clk_status == 'Not_Reviewed'
-  #   result = "Justification: \n #{control[:message].split.join(' ')}" if control_clk_status == 'Not_Applicable'
-  #   result = 'No test available for this control' if control_clk_status == 'Not_Tested'
-  #   result
-  # end
-  #
-  # def update_ckl_file
-  #   @data.keys.each do | control_id |
-  #     print '.'
-  #     vuln = @checklist.where('Vuln_Num',control_id.to_s)
-  #     vuln.status = clk_status(@data[control_id])
-  #     vuln.comments << "\n#{Time.now}: Automated compliance tests brought to you by the MITRE corporation, CrunchyDB and the InSpec project."
-  #     vuln.finding_details << clk_finding_details(@data[control_id])
-  #
-  #     if @verbose
-  #       puts control_id
-  #       puts @checklist.where('Vuln_Num',control_id.to_s).status
-  #       puts @checklist.where('Vuln_Num',control_id.to_s).finding_details
-  #       puts '====================================='
-  #     end
-  #   end
-  # end
-  #
-  # def parse_json(json)
-  #   file = JSON.parse(json)
-  #   controls = file['profiles'].last['controls']
-  #   data = {}
-  #   controls.each do |control|
-  #     c_id = control['id'].to_sym
-  #     data[c_id] = {}
-  #     data[c_id][:control_id] = control['id']
-  #     data[c_id][:impact] = control['impact'].to_s
-  #     data[c_id][:status] = []
-  #     data[c_id][:message] = []
-  #     if control.key?('results')
-  #       control['results'].each do |result|
-  #         data[c_id][:status].push(result['status'])
-  #         data[c_id][:message].push(result['skip_message']) if result['status'] == 'skipped'
-  #         data[c_id][:message].push("FAILED -- Test: #{result['code_desc']}\nMessage: #{result['message']}\n") if result['status'] == 'failed'
-  #         data[c_id][:message].push("PASS -- #{result['code_desc']}\n") if result['status'] == 'passed'
-  #       end
-  #     end
-  #     if data[c_id][:impact].to_f.zero?
-  #       data[c_id][:message] = control['desc']
-  #     end
-  #   end
-  #   data
-  # end
+
+  def read_attributes
+    @attribute = YAML.load_file(@attribute_file)
+  rescue => e
+    puts "Exception: #{e.message}"
+    puts 'Existing...'
+    exit
+  end
+
+  def generate_xccdf
+    populate_header
+    # populate_profiles @todo populate profiles; not implemented now beacuse its use is depreciated
+    populate_groups
+    write_benchmark
+  end
+
+  def populate_header
+    @benchmark.title = @attribute['benchmark.title']
+    @benchmark.id =  @attribute['benchmark.id'] 
+    @benchmark.description =  @attribute['benchmark.description']
+    @benchmark.version =  @attribute['benchmark.version']
+
+    @benchmark.status = Status.new
+    @benchmark.status.status =  @attribute['benchmark.status'] 
+    @benchmark.status.date =  @attribute['benchmark.status.date']
+
+    @benchmark.notice = Notice.new
+    @benchmark.notice.id =  @attribute['benchmark.notice']
+
+    @benchmark.plaintext = Plaintext.new
+    @benchmark.plaintext.plaintext =  @attribute['benchmark.plaintext']
+    @benchmark.plaintext.id =  @attribute['benchmark.plaintext.id']
+
+    @benchmark.reference = ReferenceBenchmark.new
+    @benchmark.reference.href = @attribute['reference.href']
+    @benchmark.reference.dc_publisher = @attribute['reference.href']
+    @benchmark.reference.dc_source = @attribute['reference.dc.source']
+
+  end
+
+def populate_groups
+    group_array = []
+    @controls.each do |control|
+      group = Group.new
+      group.id = control['id']
+      group.title = control['gtitle']
+      group.description = "<GroupDescription>#{control['gdescription']}</GroupDescription>"
+      
+      group.rule = Rule.new
+      group.rule.id = control['rid']
+      group.rule.severity = control['severity']
+      group.rule.weight = control['rweight']
+      group.rule.version = control['rversion']
+      group.rule.title = control['title'].gsub(/\n/, ' ')
+      group.rule.description = "<VulnDiscussion>#{control['desc'].gsub(/\n/, ' ')}</VulnDiscussion>"
+
+      group.rule.reference = ReferenceGroup.new
+      group.rule.reference.dc_publisher = @attribute['reference.dc.publisher']
+      group.rule.reference.dc_title = @attribute['reference.dc.title']
+      group.rule.reference.dc_subject = @attribute['reference.dc.subject']
+      group.rule.reference.dc_type = @attribute['reference.dc.type']
+      group.rule.reference.dc_identifier = @attribute['reference.dc.identifier']
+
+      group.rule.ident = Ident.new
+      group.rule.ident.system = 'http://iase.disa.mil/cci'
+      group.rule.ident.ident = control['cci']
+
+      group.rule.fixtext = Fixtext.new
+      group.rule.fixtext.fixref = control['fixref']
+      group.rule.fixtext.fixtext = control['fix']
+
+      group.rule.fix = Fix.new
+      group.rule.fix.id = control['fixref']
+
+      group.rule.check = Check.new
+      group.rule.check.system = control['checkref']
+      group.rule.check.content_ref = ContentRef.new
+      group.rule.check.content_ref.name = @attribute['content_ref.name']
+      group.rule.check.content_ref.href = @attribute['content_ref.href']
+      group.rule.check.content = control['check']
+
+      group_array << group
+    end
+    @benchmark.group = group_array
+  end
+
+  def write_benchmark
+    File.write("#{@xccdf_title}_xccdf.xml", @benchmark.to_xml)
+  end
 end
-Inspec2ckl.new
