@@ -51,3 +51,4 @@ build-iPhoneSimulator/
 
 /gitignorefolder
 .DS_Store
+Gemfile.lock
