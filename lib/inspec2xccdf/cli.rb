@@ -54,8 +54,10 @@ class MyCLI < Thor
   def help
     puts "Inspec2xccdf convertes an Inspec profile into STIG XCCDF Document\n\n"
     puts "\t-j --inspec_json : Path to inspec Json file created using command 'inspec json <profile> > example.json"
-    puts "\t-a --attributes : Path to yml file that provides the required attributes for the XCCDF Document. Sample file can be generated using command 'inspec2xccdf generate_attribute_file'"
-    puts "\t-V --verbose : verbose run"
+    puts "\t-a --attributes  : Path to yml file that provides the required attributes for the XCCDF Document. Sample file can be generated using command 'inspec2xccdf generate_attribute_file'"
+    puts "\t-t --xccdf_title : xccdf title"
+    puts "\t-V --verbose     : verbose run"
+
     puts "\nexample: ./inspec2xccdf exec -j example.json -a attributes.yml -t application_name\n\n"
     puts "\nexample: ./inspec2xccdf generate_attribute_file to generate mapping template\n\n"
   end
