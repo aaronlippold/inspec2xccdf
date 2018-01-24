@@ -3,10 +3,10 @@ benchmark.id : "Elasticsearch_5-x_STIG"
 benchmark.description : 'TThis Security Technical Implementation Guide is published as a tool to improve the security of Department of Defense (DoD) information systems. The requirements are derived from the National Institute of Standards and Technology (NIST) 800-53 and related documents. Comments or proposed revisions to this document should be sent via email to the following address: disa.stig_spt@mail.mil.'
 benchmark.version : '1'
 benchmark.status : accepted
-benchmark.status.date : "2017-09-27"
+benchmark.status.date : "2018-01-23"
 benchmark.notice : ""
 benchmark.notice.id : "terms-of-use" 
-benchmark.plaintext : "Release 1 Benchmark Date 27 Sep 2017"
+benchmark.plaintext : "Release 1 Benchmark Date 23 Jan 2018"
 benchmark.plaintext.id : 'release-info'
 
 reference.href : "http://iase.disa.mil"

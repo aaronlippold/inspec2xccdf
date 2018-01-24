@@ -93,7 +93,7 @@ def populate_groups
       group.rule.weight = control['rweight']
       group.rule.version = control['rversion']
       group.rule.title = control['title'].gsub(/\n/, ' ')
-      group.rule.description = "<VulnDiscussion>#{control['desc'].gsub(/\n/, ' ')}</VulnDiscussion>"
+      group.rule.description = "<VulnDiscussion>#{control['desc'].gsub(/\n/, ' ')}</VulnDiscussion><FalsePositives></FalsePositives><FalseNegatives></FalseNegatives><Documentable>false</Documentable><Mitigations></Mitigations><SeverityOverrideGuidance></SeverityOverrideGuidance><PotentialImpacts></PotentialImpacts><ThirdPartyTools></ThirdPartyTools><MitigationControl></MitigationControl><Responsibility></Responsibility><IAControls></IAControls>"
 
       group.rule.reference = ReferenceGroup.new
       group.rule.reference.dc_publisher = @attribute['reference.dc.publisher']
